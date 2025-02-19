@@ -1,0 +1,7 @@
+Public-Pixel.png is an adaptation made by Santiago Crespo and licensed under the CC0. Based on the original Public-Pixel ttf by GGBotNet, a monospaced font designed to fit in a 8x8 grid. https://santiagocrespo.itch.io/public-pixel-for-gbs
+
+Simple frame 8.png by 2bitcrook: Creative Commons Attribution v4.0 International You are free to use these backgrounds in non-commercial and commercial work, edit, transform and (encouraged!) build upon them. https://2bitcrook.itch.io/gameboy-dialogue-frames
+
+RPG_exterior.png, RPG_exterior_example.png, RPG_interior.png and RPG_interior_example by gumpyfunction.  -Licensing- Assets can be used in non-commercial and commercial projects of any kind, excluding those relating to or containing non-fungible tokens (NFT) or blockchain related projects. Assets can be edited to suit your own needs. Asset packs are not to be redistributed. https://gumpyfunction.itch.io/game-boy-rpg-fantasy-tileset-free
+
+Character_MegaPack.png by The Pixel Nook. https://the-pixel-nook.itch.io/gb-studio-character-pack under Creative Commons Attribution v4.0 International. https://the-pixel-nook.itch.io/gb-studio-character-pack

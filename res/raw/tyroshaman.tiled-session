@@ -1,0 +1,130 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "poor_woman_hut.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "00_shaman_hut_inside": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 136.66666666666666,
+                "y": 174.33333333333331
+            }
+        },
+        "00_shaman_hut_inside.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 110,
+                "y": 158
+            }
+        },
+        "01_shaman_hut.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -48,
+                "y": 101.5
+            }
+        },
+        "02_simple_person_hut.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 135.33333333333331,
+                "y": 129.99999999999997
+            }
+        },
+        "02_simple_person_hut_inside.tmx": {
+            "scale": 3.1171875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128,
+                "y": 128
+            }
+        },
+        "characters.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 5.5
+        },
+        "exterior.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 5.5
+        },
+        "interior.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 4
+        },
+        "poor_woman_hut.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 124.25,
+                "y": 238.5
+            }
+        },
+        "rich_family_inside.tmx": {
+            "scale": 3.1171875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127.67919799498745,
+                "y": 127.67919799498746
+            }
+        },
+        "shaman_clearing.tmx": {
+            "scale": 3.1171875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128,
+                "y": 128
+            }
+        },
+        "shaman_hut_inside.tmx": {
+            "scale": 3.1171875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127.35839598997492,
+                "y": 165.85463659147868
+            }
+        }
+    },
+    "last.imagePath": "/home/tristan/Desktop/git/Gameboy/TyroShaman/res",
+    "map.height": 32,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "map.width": 32,
+    "openFiles": [
+        "interior.tsx",
+        "characters.tsx",
+        "shaman_clearing.tmx",
+        "shaman_hut_inside.tmx",
+        "poor_woman_hut.tmx",
+        "rich_family_inside.tmx"
+    ],
+    "project": "tyroshaman.tiled-project",
+    "recentFiles": [
+        "interior.tsx",
+        "characters.tsx",
+        "shaman_clearing.tmx",
+        "shaman_hut_inside.tmx",
+        "rich_family_inside.tmx",
+        "poor_woman_hut.tmx",
+        "exterior.tsx",
+        "01_shaman_hut.tmx",
+        "00_shaman_hut_inside.tmx",
+        "02_simple_person_hut_inside.tmx",
+        "02_simple_person_hut.tmx",
+        "00_shaman_hut_inside"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    }
+}
