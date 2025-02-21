@@ -28,36 +28,6 @@ ClearBackgroundLoop:
     ld [rLCDC], a
     ret
 
-
-
-WaitForOneVBlank::
-
-    ; Wait a small amount of time
-    ; Save our count in this variable
-    ld a, 1
-    ld [wVBlankCount], a
-
-WaitForVBlankFunction::
-
-WaitForVBlankFunction_Loop::
-
-    ld a, [rLY] ; Copy the vertical line to a
-    cp 144 ; Check if the vertical line (in a) is 0
-    jp c, WaitForVBlankFunction_Loop ; A conditional jump. The condition is that 'c' is set, the last operation overflowed
-
-    ld a, [wVBlankCount]
-    sub 1
-    ld [wVBlankCount], a
-    ret z
-
-WaitForVBlankFunction_Loop2::
-
-    ld a, [rLY] ; Copy the vertical line to a
-    cp 144 ; Check if the vertical line (in a) is 0
-    jp nc, WaitForVBlankFunction_Loop2 ; A conditional jump. The condition is that 'c' is set, the last operation overflowed
-
-    jp WaitForVBlankFunction_Loop
-	
 	
 DrawText_WithTypewriterEffect::
 	; Wait a bit
@@ -87,12 +57,12 @@ InitStory::
 	
 	ld a, %11100100
 	ld [rBGP], a
+	
+	call ClearBackground
 
 	; Turn the LCD on
 	ld a, LCDCF_ON | LCDCF_BGON ;| LCDCF_OBJON
 	ld [rLCDC], a
-	
-	call ClearBackground
 	
 	; load story song
 	xor a
