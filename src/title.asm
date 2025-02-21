@@ -45,6 +45,7 @@ UpdateTitleScreen::
 	ld a, [wCurKeys]
 	and a, PADF_START
 	ret z ; continue normally if start wasn't pressed
+	call FadeToBlack
 	ld a, 1
 	ld [wGameState], a
 	call NextGameState

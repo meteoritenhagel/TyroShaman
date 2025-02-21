@@ -149,17 +149,16 @@ VBlankHandler:
 	
 NextGameState::
 	; Do not turn the LCD off outside of VBlank
-	;call FadeToBlack
 	call WaitVBlank
 	
 	; Turn the LCD off
 	xor a
 	ld [rLCDC], a
-
 	ld [rSCX], a
 	ld [rSCY], a
 	ld [rWX], a
 	ld [rWY], a
+	
 	; disable interrupts
 	;call DisableInterrupts
 
