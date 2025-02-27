@@ -42,6 +42,7 @@ UpdateTitleScreen::
 .LoadIntoPalette:
 	ld [rBGP], a
 .CheckPressStart:
+	call UpdateKeys
 	ld a, [wCurKeys]
 	cp a, PADF_START
 	ret nz ; continue normally if start wasn't pressed

@@ -56,17 +56,6 @@ EntryPoint:
 	
 	call WaitVBlank
 
-	; Clear OAM. Important: LCD screen must be off for this!
-;	ld a, 0
-;	ld b, 160 ; 160 bytes, equals 40 objects!
-;	ld hl, _OAMRAM
-;ClearOam:
-;	ld [hli], a
-;	dec b
-;	jp nz, ClearOam
-	
-	; draw objects
-
 	; During the first (blank) frame, initialize display registers
 	ld a, %11100100
 	ld [rBGP], a
@@ -83,13 +72,18 @@ EntryPoint:
 	ld a, %00000100
 	ld [rTAC], a ; 4096 Hz
 	
+	; for Shadow OMR
+	call CopyDMARoutine
 
 	; Enable Interrupts
 	ld a, %00000101 ; timer bit - VBlank bit
 	ld [rIE], a
 	ei
 	call NextGameState
-Main:
+Main:	
+	ld a, [wGameState]
+	cp 2
+	call z, UpdateOverworld
 	ld a, [wGameState]
 	cp 1
 	call z, UpdateStory
@@ -99,6 +93,7 @@ Main:
 	jp Main
 	
 TimerHandler:
+	push af
 	ld a, [wTimerCounter]
 	inc a
 	cp a, 16
@@ -126,8 +121,9 @@ LoadSecondsValue:
 	xor a ; must set timer counter to 0
 LoadValue:
 	ld [wTimerCounter], a
+	pop af
 	reti
-
+	
 DoSound:
 	push af
 	push bc
@@ -139,9 +135,8 @@ DoSound:
 	pop bc
 	pop af
 	ret
-	
+
 VBlankHandler:
-	call UpdateKeys
 	ld a, [wUpdateSound]
 	cp 0
 	call nz, DoSound
@@ -166,9 +161,9 @@ NextGameState::
 	;call ClearAllSprites
 
 	; Initiate the next state
-	;ld a, [wGameState]
-	;cp 2 ; 2 = Gameplay
-	;call z, InitGameplayState
+	ld a, [wGameState]
+	cp 2 ; 2 = Gameplay
+	call z, InitOverworld
 	ld a, [wGameState]
 	cp 1 ; 1 = Story
 	call z, InitStory

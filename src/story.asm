@@ -11,27 +11,27 @@ LoadTextFontIntoVRAM:
 	call Memcopy
 	
 ClearBackground::
-    ; Turn the LCD off
-    xor a
-    ld [rLCDC], a
-    ld bc, 1024
-    ld hl, $9800
+	; Turn the LCD off
+	xor a
+	ld [rLCDC], a
+	ld bc, 1024
+	ld hl, $9800
 ClearBackgroundLoop:
-    ld a, $80
-    ld [hli], a
-    dec bc
-    ld a, b
-    or c
-    jp nz, ClearBackgroundLoop
-    ; Turn the LCD on
-    ld a, LCDCF_ON  | LCDCF_BGON ;|LCDCF_OBJON | LCDCF_OBJ16
-    ld [rLCDC], a
-    ret
+	ld a, $80
+	ld [hli], a
+	dec bc
+	ld a, b
+	or c
+	jp nz, ClearBackgroundLoop
+	; Turn the LCD on
+	ld a, LCDCF_ON  | LCDCF_BGON ;|LCDCF_OBJON | LCDCF_OBJ16
+	ld [rLCDC], a
+	ret
 
 	
 DrawText_WithTypewriterEffect::
 	; Wait a bit
-	ld a, 6
+	ld a, 1
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 	
@@ -71,9 +71,7 @@ InitStory::
 	call hUGE_init
 	inc a
 	ld [wUpdateSound], a
-	ret
 	
-UpdateStory::
 	call WaitVBlank
 	
 	; Call Our function that typewrites text onto background/window tiles
@@ -108,7 +106,21 @@ UpdateStory::
 	ld de, $99E1
 	ld hl, Story.Line7
 	call DrawText_WithTypewriterEffect
-
+	
+	ret
+	
+UpdateStory::
+	.CheckPressStart:
+	call WaitVBlank
+	call UpdateKeys
+	ld a, [wCurKeys]
+	cp a, PADF_START
+	ret nz ; continue normally if start wasn't pressed
+	call FadeToBlack
+	ld a, 2
+	ld [wGameState], a
+	call NextGameState
+	
 	ret
 	
 	
@@ -121,7 +133,7 @@ Story:
 	.Line2 db "Naura, awaken", 255
 	.Line3 db "from your sleep...", 255
 	.Line4 db "Awaken... For the", 255
-	.Line5 db "'Curse of Miswend'", 255
+	.Line5 db "'CURSE OF MISWEND'", 255
 	.Line6 db "has fallen upon", 255
 	.Line7 db "the lands.", 255
 

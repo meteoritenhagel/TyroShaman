@@ -53,7 +53,6 @@ UpdateKeys::
 .knownret
 	ret
 
-
 WaitVBlank::
 	ld a, [rLY]
 	cp 144
