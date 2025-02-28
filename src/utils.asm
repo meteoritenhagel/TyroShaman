@@ -128,6 +128,5 @@ FadeFromBlack::
 	call WaitForVBlankFunction
 	ret
 	
-	
-	
-	
+
+

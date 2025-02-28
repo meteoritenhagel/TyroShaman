@@ -1,3 +1,5 @@
+; Code taken from https://gbdev.gg8.se/wiki/articles/OAM_DMA_tutorial
+
 INCLUDE "./include/hardware.inc"
 
 SECTION "Shadow OAM", WRAM0, ALIGN[8]

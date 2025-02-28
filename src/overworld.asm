@@ -7,7 +7,43 @@ wPlayerY:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
 
+SECTION "Tile Variables", WRAM0
+wUnwalkableTileIdx:: db
+
 SECTION "Overworld", ROM0
+
+; Convert a pixel position to a tilemap address
+; @b: Y coordinate
+; @c: X coordinate
+; hl = $9800 + X + Y * 32
+; @return hl: tile address
+GetPlayerTile:
+	; First, we need to divide by 8 to convert a pixel position to a tile position.
+	; After this we want to multiply the Y position by 32.
+	; These operations effectively cancel out so we only need to mask the Y value.
+	ld a, b
+	and a, %11111000
+	ld l, a
+	ld h, 0
+	; Now we have the position * 8 in hl
+	add hl, hl ; position * 16
+	add hl, hl ; position * 32
+	; Convert the X position to an offset.
+	ld a, c
+	srl a ; a / 2
+	srl a ; a / 4
+	srl a ; a / 8
+	; Add the two offsets together.
+	add a, l
+	ld l, a
+	adc a, h
+	sub a, l
+	ld h, a
+	; Add the offset to the tilemap's base address, and we are done!
+	ld bc, $9800
+	add hl, bc
+	ret
+
   
 UpdatePlayerObject:
 	ld hl, wShadowOAM
@@ -115,10 +151,12 @@ ClearShadowOam:
 	jp nz, ClearShadowOam
 	
 	xor a
-	ld [wPlayerX], a
-	ld [wPlayerY], a
 	ld [wPlayerCurSprite], a
 	ld [wPlayerOrientation], a
+	ld a, $70
+	ld [wPlayerX], a
+	ld a, $30
+	ld [wPlayerY], a
 	
 	; write player object
 	call UpdatePlayerObject
@@ -151,15 +189,89 @@ InitOverworld::
 	inc a
 	ld [wUpdateSound], a
 	ret
+
+; c set if walkable
+CanMoveRight:
+	ld a, [wPlayerY]
+	add a, 8
+	ld b, a
+	ld a, [wPlayerX]
+	add a, 16
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F
+	ret
+	
+CanMoveLeft:
+	ld a, [wPlayerY]
+	add a, 8
+	ld b, a
+	ld a, [wPlayerX]
+	sub a, 8
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F
+	ret
+	
+CanMoveUp:
+	ld a, [wPlayerY]
+	ld b, a
+	ld a, [wPlayerX]
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F ; so many tiles are walkable, if above, it must be a wall
+	jp nc, .return
+	
+	ld a, [wPlayerY]
+	ld b, a
+	ld a, [wPlayerX]
+	add a, 8
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F
+.return
+	ret
+	
+CanMoveDown:
+	ld a, [wPlayerY]
+	add a, 16
+	ld b, a
+	ld a, [wPlayerX]
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F ; so many tiles are walkable, if above, it must be a wall
+	jp nc, .return
+	
+	ld a, [wPlayerY]
+	add a, 16
+	ld b, a
+	ld a, [wPlayerX]
+	add a, 8
+	ld c, a
+	call GetPlayerTile
+	ld a, [hl]
+	cp a, $1F
+.return
+	ret
 	
 UpdateOverworld::
 	call WaitVBlank
+	
+	
+	ld [wUnwalkableTileIdx], a
 	
 .checkright
 	call UpdateKeys
 	ld a, [wNewKeys]
 	cp a, PADF_RIGHT
 	jp nz, .checkleft
+	call CanMoveRight
+	jp nc, .return
 	ld a, [wPlayerX]
 	add a, 8
 	cp a, 19*8
@@ -175,6 +287,8 @@ UpdateOverworld::
 	ld a, [wNewKeys]
 	cp a, PADF_LEFT
 	jp nz, .checkup
+	call CanMoveLeft
+	jp nc, .return
 	ld a, [wPlayerX]
 	cp a, 0
 	jp z, .return
@@ -190,6 +304,8 @@ UpdateOverworld::
 	ld a, [wNewKeys]
 	cp a, PADF_UP
 	jp nz, .checkdown
+	call CanMoveUp
+	jp nc, .return
 	ld a, [wPlayerY]
 	cp a, 0
 	jp z, .return
@@ -205,6 +321,8 @@ UpdateOverworld::
 	ld a, [wNewKeys]
 	cp a, PADF_DOWN
 	jp nz, .return 
+	call CanMoveDown
+	jp nc, .return
 	ld a, [wPlayerY]
 	add a, 8
 	cp a, 17*8
