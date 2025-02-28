@@ -83,6 +83,9 @@ UpdatePlayerObject:
 	ld a, [wPlayerOrientation]
 	ld [hl], a
 	
+	ld  a, HIGH(wShadowOAM)
+	call hOAMDMA
+	
 	ret
 
 LoadOverworld::
@@ -130,15 +133,15 @@ ClearShadowOam:
 
 InitOverworld::
 	call LoadOverworld
-
-	; Turn the LCD on
-	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
-	ld [rLCDC], a
 	
 	ld a, %11100100
 	ld [rBGP], a
 	ld a, %11010000
 	ld [rOBP0], a
+
+	; Turn the LCD on
+	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
+	ld [rLCDC], a
 	
 	; load story song
 	xor a
@@ -154,7 +157,7 @@ UpdateOverworld::
 	
 .checkright
 	call UpdateKeys
-	ld a, [wCurKeys]
+	ld a, [wNewKeys]
 	cp a, PADF_RIGHT
 	jp nz, .checkleft
 	ld a, [wPlayerX]
@@ -169,7 +172,7 @@ UpdateOverworld::
 	call UpdatePlayerObject
 	jp .return
 .checkleft
-	ld a, [wCurKeys]
+	ld a, [wNewKeys]
 	cp a, PADF_LEFT
 	jp nz, .checkup
 	ld a, [wPlayerX]
@@ -184,7 +187,7 @@ UpdateOverworld::
 	call UpdatePlayerObject
 	jp .return
 .checkup
-	ld a, [wCurKeys]
+	ld a, [wNewKeys]
 	cp a, PADF_UP
 	jp nz, .checkdown
 	ld a, [wPlayerY]
@@ -199,7 +202,7 @@ UpdateOverworld::
 	call UpdatePlayerObject
 	jp .return
 .checkdown
-	ld a, [wCurKeys]
+	ld a, [wNewKeys]
 	cp a, PADF_DOWN
 	jp nz, .return 
 	ld a, [wPlayerY]
@@ -214,6 +217,5 @@ UpdateOverworld::
 	call UpdatePlayerObject
 	jp .return
 .return
-	ld  a, HIGH(wShadowOAM)
-	call hOAMDMA
+	
 	ret
