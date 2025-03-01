@@ -7,8 +7,9 @@ wPlayerY:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
 
-SECTION "Tile Variables", WRAM0
+SECTION "GFX Variables", WRAM0
 wUnwalkableTileIdx:: db
+wCurrentMapCheckExits:: dw
 
 SECTION "Overworld", ROM0
 
@@ -45,7 +46,7 @@ GetPlayerTile:
 	ret
 
   
-UpdatePlayerObject:
+UpdatePlayerObject::
 	ld hl, wShadowOAM
 	ld a, [wPlayerY]
 	add a, 16
@@ -119,22 +120,21 @@ UpdatePlayerObject:
 	ld a, [wPlayerOrientation]
 	ld [hl], a
 	
-	ld  a, HIGH(wShadowOAM)
+	ld a, HIGH(wShadowOAM)
 	call hOAMDMA
 	
 	ret
+	
+CheckExits::
+	ld hl, wCurrentMapCheckExits  ; HL points to the stored routine address
+	ld a, [hl+]            ; Load low byte of the address
+	ld h, [hl]             ; Load high byte of the address
+	ld l, a               ; HL now holds the routine address
+	push hl               ; Push the address onto the stack
+	ret                   ; "Call" the routine via RET
 
 LoadOverworld::
-	ld de, InsideStart
-	ld hl, $9000  ; Tileblock 2
-	ld bc, InsideEnd - InsideStart
-	call Memcopy
-	
-	; Copy the tilemap
-	ld de, HutInsideStart
-	ld hl, $9800  ; Tilemap 0
-	ld bc, HutInsideEnd - HutInsideStart
-	call Memcopy
+	call ShamanHutInsideLoad ; start in Shaman Hut
 	
 	ld a, 0
 	ld b, 160
@@ -160,6 +160,7 @@ ClearShadowOam:
 	
 	; write player object
 	call UpdatePlayerObject
+	call CheckExits
 	
 	; load object tiles
 	ld de, CharacterMapStart
@@ -199,8 +200,10 @@ CanMoveRight:
 	add a, 16
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F
+	cp a, b
 	ret
 	
 CanMoveLeft:
@@ -211,8 +214,10 @@ CanMoveLeft:
 	sub a, 8
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F
+	cp a, b
 	ret
 	
 CanMoveUp:
@@ -221,8 +226,10 @@ CanMoveUp:
 	ld a, [wPlayerX]
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F ; so many tiles are walkable, if above, it must be a wall
+	cp a, b
 	jp nc, .return
 	
 	ld a, [wPlayerY]
@@ -231,8 +238,10 @@ CanMoveUp:
 	add a, 8
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F
+	cp a, b
 .return
 	ret
 	
@@ -243,8 +252,10 @@ CanMoveDown:
 	ld a, [wPlayerX]
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F ; so many tiles are walkable, if above, it must be a wall
+	cp a, b
 	jp nc, .return
 	
 	ld a, [wPlayerY]
@@ -254,16 +265,15 @@ CanMoveDown:
 	add a, 8
 	ld c, a
 	call GetPlayerTile
+	ld a, [wUnwalkableTileIdx]
+	ld b, a
 	ld a, [hl]
-	cp a, $1F
+	cp a, b
 .return
 	ret
 	
 UpdateOverworld::
 	call WaitVBlank
-	
-	
-	ld [wUnwalkableTileIdx], a
 	
 .checkright
 	call UpdateKeys
@@ -282,6 +292,7 @@ UpdateOverworld::
 	xor a
 	ld [wPlayerOrientation], a
 	call UpdatePlayerObject
+	call CheckExits
 	jp .return
 .checkleft
 	ld a, [wNewKeys]
@@ -299,6 +310,7 @@ UpdateOverworld::
 	ld a, `00100000; flip X
 	ld [wPlayerOrientation], a
 	call UpdatePlayerObject
+	call CheckExits
 	jp .return
 .checkup
 	ld a, [wNewKeys]
@@ -316,6 +328,7 @@ UpdateOverworld::
 	xor a
 	ld [wPlayerOrientation], a
 	call UpdatePlayerObject
+	call CheckExits
 	jp .return
 .checkdown
 	ld a, [wNewKeys]
@@ -333,6 +346,7 @@ UpdateOverworld::
 	xor a
 	ld [wPlayerOrientation], a
 	call UpdatePlayerObject
+	call CheckExits
 	jp .return
 .return
 	

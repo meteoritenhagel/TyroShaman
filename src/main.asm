@@ -147,12 +147,7 @@ NextGameState::
 	call WaitVBlank
 	
 	; Turn the LCD off
-	xor a
-	ld [rLCDC], a
-	ld [rSCX], a
-	ld [rSCY], a
-	ld [rWX], a
-	ld [rWY], a
+	call TurnLcdOff
 	
 	; disable interrupts
 	;call DisableInterrupts

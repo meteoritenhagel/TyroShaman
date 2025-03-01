@@ -128,5 +128,12 @@ FadeFromBlack::
 	call WaitForVBlankFunction
 	ret
 	
-
+TurnLcdOff::
+	xor a
+	ld [rLCDC], a
+	ld [rSCX], a
+	ld [rSCY], a
+	ld [rWX], a
+	ld [rWY], a
+	ret
 
