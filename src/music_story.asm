@@ -1,6 +1,6 @@
 include "include/hUGE.inc"
 
-SECTION "song_descriptor Song Data", ROMX
+SECTION "song_descriptor Song Data", ROM0
 
 story_song::
 db 8

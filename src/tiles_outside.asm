@@ -1,4 +1,4 @@
-SECTION "Outside Tiles", ROMX
+SECTION "Outside Tiles", ROMX, BANK[1]
 
 OutsideStart::
 db $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00

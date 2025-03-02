@@ -1,6 +1,6 @@
 INCLUDE "./include/hardware.inc"
 
-SECTION "PoorWomanHutInside Tilemap", ROMX
+SECTION "PoorWomanHutInside Tilemap", ROMX, BANK[1]
 
 PoorWomanHutInsideStart::
 db $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -62,7 +62,30 @@ PoorWomanHutInsideLoad::
 PoorWomanHutInsideCheckExit::
     ; first check x coordinate
     ld a, [wPlayerX]
+    cp a, 96
+    jp z, .checkY0
     ret
 
     ; if there is a match, check y coordinate
 
+.checkY0
+.subcheck0_0
+    ld a, [wPlayerY]
+    cp a, 128
+    jp nz, .subcheck0_1
+    ld a, 32
+    ld [wPlayerX], a
+    ld a, 56
+    ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
+    call TurnLcdOff
+    call PoorWomanHutOutsideLoad
+    jp .final
+.subcheck0_1
+    ret
+.final
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
+    ld [rLCDC], a
+    ret

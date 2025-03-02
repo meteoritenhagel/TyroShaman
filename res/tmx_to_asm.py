@@ -81,7 +81,7 @@ def tileset_to_asm(tmx_file_path, name):
           f"    intersection:     {len(obstructed_uniques) + len(unobstructed_uniques) - len(total_uniques)}\n")
     print("    ", len(obstructed_uniques), len(unobstructed_uniques), "total:", len(obstructed_uniques) + len(unobstructed_uniques), "(127 possible)")
 
-    output_str = f'SECTION "{name} Tiles", ROMX\n\n'
+    output_str = f'SECTION "{name} Tiles", ROMX, BANK[1]\n\n'
     output_str += f'{name}Start::\n'
     for tile in unobstructed_uniques:
         output_str += tile
@@ -118,7 +118,7 @@ def objects_to_asm(tmx_file_path, name):
                     tile_data.append({"x": x, "y": y, "gid": gid, "binary": binary_data, "image": orig_image})
 
 
-    output_str = f'SECTION "{name} Tiles", ROMX\n\n'
+    output_str = f'SECTION "{name} Tiles", ROMX, BANK[1]\n\n'
     output_str += f'{name}Start::\n'
     for tile in tile_data:
         output_str += tile["binary"]
@@ -152,7 +152,7 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
 
     output_str = f'INCLUDE "./include/hardware.inc"\n\n'
 
-    output_str += f'SECTION "{name} Tilemap", ROMX\n\n'
+    output_str += f'SECTION "{name} Tilemap", ROMX, BANK[1]\n\n'
     output_str += f"{name}Start::\n"
     for row in range(32):
         output_str += "db "
@@ -222,18 +222,18 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
                 f'    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly\n'
                 f"    call TurnLcdOff\n"
                 f"    call {exit['destination']}Load\n"
-                f"    jp .final{idx}\n"
+                f"    jp .final\n"
             )
         output_str += (
             f".subcheck{idx}_{len(exit_group)}\n"
             f"    ret\n"
         )
-        output_str += (
-            f".final{idx}\n"
-            f"    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON\n"
-            f"    ld [rLCDC], a\n"
-            f"    ret\n"
-        )
+    output_str += (
+        f".final\n"
+        f"    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON\n"
+        f"    ld [rLCDC], a\n"
+        f"    ret\n"
+    )
 
     with open(f"../src/tilemap_{name.lower()}.asm", "w") as f:
         f.write(output_str)
@@ -281,8 +281,16 @@ if __name__ == "__main__":
     tmx_file_path = "./raw/all_outside.tmx"  # Replace with your TMX file path
     tileset_outside = tileset_to_asm(tmx_file_path, "Outside")
 
-    inside_levels = ["./raw/ShamanHutInside.tmx", "./raw/PoorWomanHutInside.tmx"]
-    outside_levels = ["./raw/ShamanHutOutside.tmx"]
+    inside_levels = [
+        "./raw/ShamanHutInside.tmx",
+        "./raw/PoorWomanHutInside.tmx",
+    ]
+    outside_levels = [
+        "./raw/ShamanHutOutside.tmx",
+        "./raw/WayToTheVillage.tmx",
+        "./raw/WayToTheVillage2.tmx",
+        "./raw/PoorWomanHutOutside.tmx",
+    ]
     all_levels = inside_levels + outside_levels
     exits_dict = collect_level_exits(all_levels)
 

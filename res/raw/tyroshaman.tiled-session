@@ -66,11 +66,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 5.541666666666666,
+            "scale": 8,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 80.03007518796993,
-                "y": 71.81954887218045
+                "x": 88.5625,
+                "y": 98.375
             }
         },
         "ShamanHutInside.tmx": {
@@ -88,11 +88,19 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 5.5,
+            "scale": 8,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 65.36363636363637,
-                "y": 80
+                "x": 37.3125,
+                "y": 77.5
+            }
+        },
+        "WayToTheVillage.tmx": {
+            "scale": 5.541666666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 80.03007518796993,
+                "y": 72.00000000000001
             }
         },
         "all_inside.tmx": {

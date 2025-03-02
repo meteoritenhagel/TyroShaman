@@ -1,6 +1,6 @@
 INCLUDE "./include/hardware.inc"
 
-SECTION "ShamanHutInside Tilemap", ROMX
+SECTION "ShamanHutInside Tilemap", ROMX, BANK[1]
 
 ShamanHutInsideStart::
 db $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $7e, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -82,10 +82,10 @@ ShamanHutInsideCheckExit::
     call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
     call TurnLcdOff
     call ShamanHutOutsideLoad
-    jp .final0
+    jp .final
 .subcheck0_1
     ret
-.final0
+.final
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
     ld [rLCDC], a
     ret

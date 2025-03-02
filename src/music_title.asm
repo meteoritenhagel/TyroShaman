@@ -1,6 +1,6 @@
 include "include/hUGE.inc"
 
-SECTION "title_song Song Data", ROMX
+SECTION "title_song Song Data", ROM0
 
 title_song::
 db 7

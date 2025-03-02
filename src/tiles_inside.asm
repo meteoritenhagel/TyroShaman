@@ -1,4 +1,4 @@
-SECTION "Inside Tiles", ROMX
+SECTION "Inside Tiles", ROMX, BANK[1]
 
 InsideStart::
 db $00, $01, $01, $06, $05, $00, $05, $08, $09, $10, $11, $20, $31, $ce, $ff, $00

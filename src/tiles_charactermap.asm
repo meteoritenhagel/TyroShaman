@@ -1,4 +1,4 @@
-SECTION "CharacterMap Tiles", ROMX
+SECTION "CharacterMap Tiles", ROMX, BANK[1]
 
 CharacterMapStart::
 db $03, $03, $0c, $0f, $13, $1f, $17, $1f, $28, $3f, $35, $3a, $3f, $22, $3f, $32
