@@ -185,32 +185,51 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
         f'    ret\n\n'
     )
 
+    # collect exits regarding their X coordinate
+    grouped_exits = {}
+    for exit in exits:
+        if exit["teleport_x"] not in grouped_exits:
+            grouped_exits[exit["teleport_x"]] = []
+        grouped_exits[exit["teleport_x"]].append(exit)
+
     output_str += f"{name}CheckExit::\n"
     output_str += (
         f"    ; first check x coordinate\n"
-        #f"    call WaitVBlank\n"
         f"    ld a, [wPlayerX]\n"
     )
-    for idx, exit in enumerate(exits):
+    for idx, exit_group in enumerate(grouped_exits.values()):
         output_str += (
-            f"    cp a, {exit['teleport_x']}\n"
-            f"    jp z, .ret{idx}\n"
+            f"    cp a, {exit_group[0]['teleport_x']}\n"
+            f"    jp z, .checkY{idx}\n"
         )
 
     output_str += f"    ret\n"
     output_str += f"\n    ; if there is a match, check y coordinate\n\n"
-    for idx, exit in enumerate(exits):
+    for idx, exit_group in enumerate(grouped_exits.values()):
+        output_str += f".checkY{idx}\n"
+        for exit_idx, exit in enumerate(exit_group):
+            output_str += (
+                f".subcheck{idx}_{exit_idx}\n"
+                f"    ld a, [wPlayerY]\n"
+                f"    cp a, {exit['teleport_y']}\n"
+                f"    jp nz, .subcheck{idx}_{exit_idx+1}\n"
+                f"    ld a, {exit['target_x']}\n"
+                f"    ld [wPlayerX], a\n"
+                f"    ld a, {exit['target_y']}\n"
+                f"    ld [wPlayerY], a\n"
+                f'    ld a, 8\n'
+                f'    ld [wVBlankCount], a\n'
+                f'    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly\n'
+                f"    call TurnLcdOff\n"
+                f"    call {exit['destination']}Load\n"
+                f"    jp .final{idx}\n"
+            )
         output_str += (
-            f".ret{idx}\n"
-            f"    ld a, [wPlayerY]\n"
-            f"    cp a, {exit['teleport_y']}\n"
-            f"    ret nz\n"
-            f"    ld a, {exit['target_x']}\n"
-            f"    ld [wPlayerX], a\n"
-            f"    ld a, {exit['target_y']}\n"
-            f"    ld [wPlayerY], a\n"
-            f"    call TurnLcdOff\n"
-            f"    call {exit['destination']}Load\n"
+            f".subcheck{idx}_{len(exit_group)}\n"
+            f"    ret\n"
+        )
+        output_str += (
+            f".final{idx}\n"
             f"    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON\n"
             f"    ld [rLCDC], a\n"
             f"    ret\n"

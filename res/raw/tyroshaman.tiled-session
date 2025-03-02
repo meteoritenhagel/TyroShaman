@@ -108,11 +108,11 @@
             "scaleInEditor": 3
         },
         "all_outside.tmx": {
-            "scale": 3.1171875,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 126.23558897243107,
-                "y": 126.71679197994987
+                "x": 135.83333333333331,
+                "y": 133.66666666666669
             }
         },
         "all_outside_tileset.tsx": {

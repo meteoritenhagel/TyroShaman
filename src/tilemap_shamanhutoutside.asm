@@ -63,36 +63,80 @@ ShamanHutOutsideCheckExit::
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 80
-    jp z, .ret0
+    jp z, .checkY0
     cp a, 0
-    jp z, .ret1
+    jp z, .checkY1
     ret
 
     ; if there is a match, check y coordinate
 
-.ret0
+.checkY0
+.subcheck0_0
     ld a, [wPlayerY]
-    cp a, 64
-    ret nz
+    cp a, 56
+    jp nz, .subcheck0_1
     ld a, 96
     ld [wPlayerX], a
     ld a, 112
     ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
     call TurnLcdOff
     call ShamanHutInsideLoad
+    jp .final0
+.subcheck0_1
+    ret
+.final0
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
     ld [rLCDC], a
     ret
-.ret1
+.checkY1
+.subcheck1_0
     ld a, [wPlayerY]
     cp a, 80
-    ret nz
+    jp nz, .subcheck1_1
     ld a, 8
     ld [wPlayerX], a
     ld a, 80
     ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
     call TurnLcdOff
     call ShamanHutOutsideLoad
+    jp .final1
+.subcheck1_1
+    ld a, [wPlayerY]
+    cp a, 72
+    jp nz, .subcheck1_2
+    ld a, 8
+    ld [wPlayerX], a
+    ld a, 80
+    ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
+    call TurnLcdOff
+    call ShamanHutOutsideLoad
+    jp .final1
+.subcheck1_2
+    ld a, [wPlayerY]
+    cp a, 88
+    jp nz, .subcheck1_3
+    ld a, 8
+    ld [wPlayerX], a
+    ld a, 80
+    ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
+    call TurnLcdOff
+    call ShamanHutOutsideLoad
+    jp .final1
+.subcheck1_3
+    ret
+.final1
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
     ld [rLCDC], a
     ret

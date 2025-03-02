@@ -63,21 +63,29 @@ ShamanHutInsideCheckExit::
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 96
-    jp z, .ret0
+    jp z, .checkY0
     ret
 
     ; if there is a match, check y coordinate
 
-.ret0
+.checkY0
+.subcheck0_0
     ld a, [wPlayerY]
     cp a, 128
-    ret nz
+    jp nz, .subcheck0_1
     ld a, 80
     ld [wPlayerX], a
-    ld a, 72
+    ld a, 64
     ld [wPlayerY], a
+    ld a, 8
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction ; wait for 8 VBlanks, since otherwise the game can crash if levels are changed to quickly
     call TurnLcdOff
     call ShamanHutOutsideLoad
+    jp .final0
+.subcheck0_1
+    ret
+.final0
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
     ld [rLCDC], a
     ret
