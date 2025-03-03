@@ -2,3 +2,5 @@
 *.sym
 *.gb
 *.gbc
+*.tiled-session
+
