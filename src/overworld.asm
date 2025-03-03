@@ -4,6 +4,9 @@ INCLUDE "src/charmap.asm"
 SECTION "Player Variables", WRAM0
 wPlayerX:: db
 wPlayerY:: db
+wShamanX:: db
+wShamanY:: db
+wShamanTileOffset:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
 
@@ -43,6 +46,60 @@ GetPlayerTile:
 	; Add the offset to the tilemap's base address, and we are done!
 	ld bc, $9800
 	add hl, bc
+	ret
+	
+	
+UpdateShamanObject::
+	ld a, [wShamanTileOffset]
+	ld b, a
+	
+	ld hl, wShadowOAM+16
+	ld a, [wShamanY]  ; y
+	add a, $16
+	ld [hli], a
+	ld a, [wShamanX] ; x
+	add a, $8
+	ld [hli], a
+	ld a, 12 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+16+4 
+	ld a, [wShamanY] ; y
+	add a, $16
+	ld [hli], a
+	ld a, [wShamanX] ; x
+	add a, $8+$8
+	ld [hli], a
+	ld a, 13 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+16+8
+	ld a, [wShamanY] ; y
+	add a, $8+$16
+	ld [hli], a
+	ld a, [wShamanX] ; x
+	add a, $8
+	ld [hli], a
+	ld a, 14 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+16+16
+	ld a, [wShamanY] ; y
+	add a, $8+$16
+	ld [hli], a
+	ld a, [wShamanX] ; x
+	add a, $8+$8
+	ld [hli], a
+	ld a, 15 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld a, HIGH(wShadowOAM)
+	call hOAMDMA
+	
 	ret
 
   
@@ -157,10 +214,17 @@ ClearShadowOam:
 	ld [wPlayerX], a
 	ld a, $30
 	ld [wPlayerY], a
+	xor a
+	ld [wShamanTileOffset], a
+	
+	ld a, $60
+	ld [wShamanX], a
+	ld a, $2A
+	ld [wShamanY], a
 	
 	; write player object
 	call UpdatePlayerObject
-	call CheckExits
+	call UpdateShamanObject
 	
 	; load object tiles
 	ld de, CharacterMapStart
@@ -182,13 +246,42 @@ InitOverworld::
 	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
 	ld [rLCDC], a
 	
-	; load story song
+	; load game song
 	xor a
 	ld [wUpdateSound], a
 	ld hl, story_song
 	call hUGE_init
 	inc a
 	ld [wUpdateSound], a
+
+.shamanCutscene
+	ld a, 8
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	ld a, [wShamanY]
+	cp a, $89
+	jp z, .exitCutscene
+	add a, 5
+	ld [wShamanY], a
+	
+	ld a, [wShamanTileOffset]
+	cp a, 0
+	jp z, .setTileOffset
+	xor a
+	ld [wShamanTileOffset], a
+	jp .update
+.setTileOffset
+	ld a, $80
+	ld [wShamanTileOffset], a
+.update
+	call UpdateShamanObject
+	jp .shamanCutscene
+.exitCutscene
+	ld a, $F8
+	ld [wShamanY], a
+	ld a, $F0
+	ld [wShamanX], a
+	call UpdateShamanObject
 	ret
 
 ; c set if walkable

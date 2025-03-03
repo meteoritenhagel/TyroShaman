@@ -3,7 +3,7 @@ INCLUDE "src/charmap.asm"
 
 SECTION "Story", ROM0
 
-DEF STORY_TEXT_WAIT EQU 10
+DEF STORY_TEXT_WAIT EQU 1
 
 LoadTextFontIntoVRAM:
 	; Copy the font data
