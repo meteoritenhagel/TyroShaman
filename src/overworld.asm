@@ -1,4 +1,5 @@
 INCLUDE "./include/hardware.inc"
+INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
 
 SECTION "Player Variables", WRAM0
@@ -9,6 +10,7 @@ wShamanY:: db
 wShamanTileOffset:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
+wPlayerTileOffset:: db
 
 SECTION "GFX Variables", WRAM0
 wUnwalkableTileIdx:: db
@@ -104,6 +106,9 @@ UpdateShamanObject::
 
   
 UpdatePlayerObject::
+	ld a, [wPlayerTileOffset]
+	ld c, a
+	
 	ld hl, wShadowOAM
 	ld a, [wPlayerY]
 	add a, 16
@@ -118,6 +123,7 @@ UpdatePlayerObject::
 	add a, b
 	ld [hli], a
 	ld a, [wPlayerCurSprite]
+	add a, c
 	ld [hli], a
 	ld a, [wPlayerOrientation]
 
@@ -137,6 +143,7 @@ UpdatePlayerObject::
 	ld [hli], a
 	ld a, [wPlayerCurSprite]
 	inc a
+	add a, c
 	ld [hli], a
 	ld a, [wPlayerOrientation]
 	
@@ -155,6 +162,7 @@ UpdatePlayerObject::
 	ld [hli], a
 	ld a, [wPlayerCurSprite]
 	add a, 2
+	add a, c
 	ld [hli], a
 	ld a, [wPlayerOrientation]
 	ld [hli], a
@@ -173,6 +181,7 @@ UpdatePlayerObject::
 	ld [hli], a
 	ld a, [wPlayerCurSprite]
 	add a, 3
+	add a, c
 	ld [hli], a
 	ld a, [wPlayerOrientation]
 	ld [hl], a
@@ -210,12 +219,12 @@ ClearShadowOam:
 	xor a
 	ld [wPlayerCurSprite], a
 	ld [wPlayerOrientation], a
+	ld [wPlayerTileOffset], a
+	ld [wShamanTileOffset], a
 	ld a, $70
 	ld [wPlayerX], a
 	ld a, $30
 	ld [wPlayerY], a
-	xor a
-	ld [wShamanTileOffset], a
 	
 	ld a, $60
 	ld [wShamanX], a
@@ -370,7 +379,7 @@ UpdateOverworld::
 	
 .checkright
 	call UpdateKeys
-	ld a, [wNewKeys]
+	ld a, [wCurKeys]
 	cp a, PADF_RIGHT
 	jp nz, .checkleft
 	call CanMoveRight
@@ -379,16 +388,33 @@ UpdateOverworld::
 	add a, 8
 	cp a, 19*8
 	jp nc, .return
+	sub a, 4
 	ld [wPlayerX], a
 	ld a, 8
 	ld [wPlayerCurSprite], a
 	xor a
 	ld [wPlayerOrientation], a
+	ld a, $80
+	ld [wPlayerTileOffset], a
 	call UpdatePlayerObject
+	
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	ld a, [wPlayerX]
+	add a, 4
+	ld [wPlayerX], a
+	xor a
+	ld [wPlayerTileOffset], a
+	call UpdatePlayerObject
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+
 	call CheckExits
 	jp .return
 .checkleft
-	ld a, [wNewKeys]
+	ld a, [wCurKeys]
 	cp a, PADF_LEFT
 	jp nz, .checkup
 	call CanMoveLeft
@@ -396,17 +422,33 @@ UpdateOverworld::
 	ld a, [wPlayerX]
 	cp a, 0
 	jp z, .return
-	sub a, 8
+	sub a, 4
 	ld [wPlayerX], a
 	ld a, 8
 	ld [wPlayerCurSprite], a
 	ld a, `00100000; flip X
 	ld [wPlayerOrientation], a
+	ld a, $80
+	ld [wPlayerTileOffset], a
 	call UpdatePlayerObject
+	
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	ld a, [wPlayerX]
+	sub a, 4
+	ld [wPlayerX], a
+	xor a
+	ld [wPlayerTileOffset], a
+	call UpdatePlayerObject
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+
 	call CheckExits
 	jp .return
 .checkup
-	ld a, [wNewKeys]
+	ld a, [wCurKeys]
 	cp a, PADF_UP
 	jp nz, .checkdown
 	call CanMoveUp
@@ -414,17 +456,33 @@ UpdateOverworld::
 	ld a, [wPlayerY]
 	cp a, 0
 	jp z, .return
-	sub a, 8
+	sub a, 4
 	ld [wPlayerY], a
 	ld a, 4
 	ld [wPlayerCurSprite], a
 	xor a
 	ld [wPlayerOrientation], a
+	ld a, $80
+	ld [wPlayerTileOffset], a
 	call UpdatePlayerObject
+	
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	ld a, [wPlayerY]
+	sub a, 4
+	ld [wPlayerY], a
+	xor a
+	ld [wPlayerTileOffset], a
+	call UpdatePlayerObject
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	
 	call CheckExits
 	jp .return
 .checkdown
-	ld a, [wNewKeys]
+	ld a, [wCurKeys]
 	cp a, PADF_DOWN
 	jp nz, .return 
 	call CanMoveDown
@@ -433,12 +491,29 @@ UpdateOverworld::
 	add a, 8
 	cp a, 17*8
 	jp nc, .return
+	sub a, 4
 	ld [wPlayerY], a
 	ld a, 0
 	ld [wPlayerCurSprite], a
 	xor a
 	ld [wPlayerOrientation], a
+	ld a, $80
+	ld [wPlayerTileOffset], a
 	call UpdatePlayerObject
+	
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	ld a, [wPlayerY]
+	add a, 4
+	ld [wPlayerY], a
+	xor a
+	ld [wPlayerTileOffset], a
+	call UpdatePlayerObject
+	ld a, PLAYER_WALK_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	
 	call CheckExits
 	jp .return
 .return

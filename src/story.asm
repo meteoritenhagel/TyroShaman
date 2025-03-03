@@ -1,9 +1,8 @@
 INCLUDE "./include/hardware.inc"
+INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
 
 SECTION "Story", ROM0
-
-DEF STORY_TEXT_WAIT EQU 1
 
 LoadTextFontIntoVRAM:
 	; Copy the font data
@@ -136,7 +135,7 @@ Story:
 	.Line3 db "Do not fear...", 255
 	.Line4 db "For I shall return", 255
 	.Line5 db "home when the", 255
-	.Line6 db "CURSE OF EMPTY", 255
+	.Line6 db " 'CURSE OF EMPTY'", 255
 	.Line7 db "is lifted from us.", 255
 
 
