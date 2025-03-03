@@ -11,7 +11,7 @@ RGBDS_FIX           := rgbfix
 LINK_FLAGS          := 
 FIX_FLAGS           := -v -p 0xFF
 
-PROJECT_EXT         := gb
+PROJECT_EXT         := gbc
 SRC_DIR             := src
 INC_DIR             := include
 BUILD_DIR           := build

@@ -3,6 +3,8 @@ INCLUDE "src/charmap.asm"
 
 SECTION "Story", ROM0
 
+DEF STORY_TEXT_WAIT EQU 10
+
 LoadTextFontIntoVRAM:
 	; Copy the font data
 	ld de, Font
@@ -24,14 +26,14 @@ ClearBackgroundLoop:
 	or c
 	jp nz, ClearBackgroundLoop
 	; Turn the LCD on
-	ld a, LCDCF_ON  | LCDCF_BGON ;|LCDCF_OBJON | LCDCF_OBJ16
+	ld a, LCDCF_ON  | LCDCF_BGON
 	ld [rLCDC], a
 	ret
 
 	
 DrawText_WithTypewriterEffect::
 	; Wait a bit
-	ld a, 1
+	ld a, STORY_TEXT_WAIT
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 	
@@ -128,14 +130,14 @@ SECTION "Text", ROM0
 
 Story: 
         ;.Line1 db "The galatic empire", 255
-        .Blank db " ", 255
+        .Blank db "      ", 255
 	.Line1 db "Naura...", 255
-	.Line2 db "Naura, awaken", 255
-	.Line3 db "from your sleep...", 255
-	.Line4 db "Awaken... For the", 255
-	.Line5 db "'CURSE OF MISWEND'", 255
-	.Line6 db "has fallen upon", 255
-	.Line7 db "the lands.", 255
+	.Line2 db "Do not leave...", 255
+	.Line3 db "Do not fear...", 255
+	.Line4 db "For I shall return", 255
+	.Line5 db "home when the", 255
+	.Line6 db "CURSE OF EMPTY", 255
+	.Line7 db "is lifted from us.", 255
 
 
 Font:
