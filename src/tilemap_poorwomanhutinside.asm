@@ -56,6 +56,22 @@ PoorWomanHutInsideLoad::
     inc hl                               ; Move to the high byte
     ld [hl], HIGH(PoorWomanHutInsideCheckExit)       ; Store the high byte
 
+    ld a, $F8
+    ld [wPatientY], a
+    ld a, $F0
+    ld [wPatientX], a
+
+    ld a, [wSuccessfulRitualCounter]
+    cp a, 0
+    jp nz, .update
+    ld a, 64
+    ld [wPatientY], a
+    ld a, 48
+    ld [wPatientX], a
+    ld a, 24
+    ld [wPatientTileOffset], a
+.update
+    call UpdatePatientObject
     call UpdatePlayerObject
     ret
 

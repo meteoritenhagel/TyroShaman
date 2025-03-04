@@ -1,4 +1,4 @@
-SECTION "Ritual Tiles", ROMX, BANK[1]
+SECTION "Ritual Tiles", ROM0
 
 RitualStart::
 db $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00

@@ -56,6 +56,22 @@ ShamanHutInsideLoad::
     inc hl                               ; Move to the high byte
     ld [hl], HIGH(ShamanHutInsideCheckExit)       ; Store the high byte
 
+    ld a, $F8
+    ld [wPatientY], a
+    ld a, $F0
+    ld [wPatientX], a
+
+    ld a, [wSuccessfulRitualCounter]
+    cp a, 3
+    jp nz, .update
+    ld a, 48
+    ld [wPatientY], a
+    ld a, 24
+    ld [wPatientX], a
+    ld a, 12
+    ld [wPatientTileOffset], a
+.update
+    call UpdatePatientObject
     call UpdatePlayerObject
     ret
 

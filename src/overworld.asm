@@ -5,20 +5,20 @@ INCLUDE "src/charmap.asm"
 SECTION "Player Variables", WRAM0
 wPlayerX:: db
 wPlayerY:: db
-wShamanX:: db
-wShamanY:: db
-wPatientX:: db
-wPatientY:: db
-wShamanTileOffset:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
 wPlayerTileOffset:: db
+
+wShamanX:: db
+wShamanY:: db
+wShamanTileOffset:: db
+
+wPatientX:: db
+wPatientY:: db
+wPatientTileOffset:: db
+
 wCutsceneIsSeen:: db
-wCurrentRitualStatus::
-	.Patient1: db
-	.Patient2: db
-	.Patient3: db
-	.Patient4: db
+wSuccessfulRitualCounter:: db
 
 SECTION "Game Logic Variables", WRAM0
 wUnwalkableTileIdx:: db
@@ -199,6 +199,60 @@ UpdatePlayerObject::
 	
 	ret
 	
+
+UpdatePatientObject::
+	ld a, [wPatientTileOffset]
+	ld b, a
+	
+	ld hl, wShadowOAM+32
+	ld a, [wPatientY]  ; y
+	add a, $16
+	ld [hli], a
+	ld a, [wPatientX] ; x
+	add a, $8
+	ld [hli], a
+	ld a, 12 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+32+4 
+	ld a, [wPatientY] ; y
+	add a, $16
+	ld [hli], a
+	ld a, [wPatientX] ; x
+	add a, $8+$8
+	ld [hli], a
+	ld a, 13 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+32+8
+	ld a, [wPatientY] ; y
+	add a, $8+$16
+	ld [hli], a
+	ld a, [wPatientX] ; x
+	add a, $8
+	ld [hli], a
+	ld a, 14 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld hl, wShadowOAM+32+16
+	ld a, [wPatientY] ; y
+	add a, $8+$16
+	ld [hli], a
+	ld a, [wPatientX] ; x
+	add a, $8+$8
+	ld [hli], a
+	ld a, 15 ; Shaman tile
+	add a, b
+	ld [hl], a
+	
+	ld a, HIGH(wShadowOAM)
+	call hOAMDMA
+	
+	ret
+	
 CheckExits::
 	ld hl, wCurrentMapCheckExits  ; HL points to the stored routine address
 	ld a, [hl+]            ; Load low byte of the address
@@ -254,11 +308,13 @@ ClearShadowOam:
 InitOverworld::
 	xor a
 	ld [wCutsceneIsSeen], a
+	ld [wSuccessfulRitualCounter], a
 	
 	ld a, $F8
 	ld [wPatientY], a
 	ld a, $F0
 	ld [wPatientX], a
+	
 InsideInitOverworld::
 	call LoadOverworld
 	

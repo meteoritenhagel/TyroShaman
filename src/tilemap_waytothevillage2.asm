@@ -56,6 +56,22 @@ WayToTheVillage2Load::
     inc hl                               ; Move to the high byte
     ld [hl], HIGH(WayToTheVillage2CheckExit)       ; Store the high byte
 
+    ld a, $F8
+    ld [wPatientY], a
+    ld a, $F0
+    ld [wPatientX], a
+
+    ld a, [wSuccessfulRitualCounter]
+    cp a, 2
+    jp nz, .update
+    ld a, 104
+    ld [wPatientY], a
+    ld a, 56
+    ld [wPatientX], a
+    ld a, 48
+    ld [wPatientTileOffset], a
+.update
+    call UpdatePatientObject
     call UpdatePlayerObject
     ret
 

@@ -81,7 +81,7 @@ def tileset_to_asm(tmx_file_path, name):
           f"    intersection:     {len(obstructed_uniques) + len(unobstructed_uniques) - len(total_uniques)}\n")
     print("    ", len(obstructed_uniques), len(unobstructed_uniques), "total:", len(obstructed_uniques) + len(unobstructed_uniques), "(127 possible)")
 
-    output_str = f'SECTION "{name} Tiles", ROMX, BANK[1]\n\n'
+    output_str = f'SECTION "{name} Tiles", ROM0\n\n'
     output_str += f'{name}Start::\n'
     for tile in unobstructed_uniques:
         output_str += tile
@@ -186,6 +186,18 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
     print()
     print(f"Build Tilemap ASM: {tmx_file_path}")
 
+    patientX = None
+    patientY = None
+    patientID = None
+
+    for object in tmx_data.objects:
+        name_split = object.name.strip(" ").split(",")
+        if len(name_split) == 2: # patient object
+            patientX = int(object.x)
+            patientY = int(object.y)
+            patientID = name_split[0][-1]
+            patientTile = int(name_split[1])*12
+
     tileset_data = np.zeros((32, 32), np.uint8)
     for layer in tmx_data.visible_layers:
         if isinstance(layer, pytmx.TiledTileLayer):
@@ -225,6 +237,29 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
         f'    inc hl                               ; Move to the high byte\n'
         f'    ld [hl], HIGH({name}CheckExit)       ; Store the high byte\n'
         f'\n'
+        f'    ld a, $F8\n'
+        f'    ld [wPatientY], a\n'
+        f'    ld a, $F0\n'
+        f'    ld [wPatientX], a\n'
+    )
+
+    if patientID is not None:
+        output_str += (
+            f'\n'
+            f'    ld a, [wSuccessfulRitualCounter]\n'
+            f'    cp a, {patientID}\n'
+            f'    jp nz, .update\n'
+            f'    ld a, {patientY}\n'
+            f'    ld [wPatientY], a\n'
+            f'    ld a, {patientX}\n'
+            f'    ld [wPatientX], a\n'
+            f'    ld a, {patientTile}\n'
+            f'    ld [wPatientTileOffset], a\n'
+            f'.update\n'
+            f'    call UpdatePatientObject\n'
+        )
+
+    output_str += (
         f'    call UpdatePlayerObject\n'
         f'    ret\n\n'
     )

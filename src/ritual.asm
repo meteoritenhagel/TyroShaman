@@ -607,6 +607,10 @@ PerformRitual::
 	ret
 	
 .success
+	ld a, [wSuccessfulRitualCounter]
+	inc a
+	ld [wSuccessfulRitualCounter], a
+	
 	call ClearBackground
 	
 	ld de, $98C2
