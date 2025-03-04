@@ -7,12 +7,20 @@ wPlayerX:: db
 wPlayerY:: db
 wShamanX:: db
 wShamanY:: db
+wPatientX:: db
+wPatientY:: db
 wShamanTileOffset:: db
 wPlayerCurSprite:: db
 wPlayerOrientation:: db
 wPlayerTileOffset:: db
+wCutsceneIsSeen:: db
+wCurrentRitualStatus::
+	.Patient1: db
+	.Patient2: db
+	.Patient3: db
+	.Patient4: db
 
-SECTION "GFX Variables", WRAM0
+SECTION "Game Logic Variables", WRAM0
 wUnwalkableTileIdx:: db
 wCurrentMapCheckExits:: dw
 
@@ -226,9 +234,9 @@ ClearShadowOam:
 	ld a, $30
 	ld [wPlayerY], a
 	
-	ld a, $60
+	ld a, $f0
 	ld [wShamanX], a
-	ld a, $2A
+	ld a, $f8
 	ld [wShamanY], a
 	
 	; write player object
@@ -244,6 +252,14 @@ ClearShadowOam:
 	ret
 
 InitOverworld::
+	xor a
+	ld [wCutsceneIsSeen], a
+	
+	ld a, $F8
+	ld [wPatientY], a
+	ld a, $F0
+	ld [wPatientX], a
+InsideInitOverworld::
 	call LoadOverworld
 	
 	ld a, %11100100
@@ -262,7 +278,16 @@ InitOverworld::
 	call hUGE_init
 	inc a
 	ld [wUpdateSound], a
-
+	
+	ld a, [wCutsceneIsSeen]
+	cp a, 0
+	ret nz
+	
+	ld a, $60
+	ld [wShamanX], a
+	ld a, $2A
+	ld [wShamanY], a
+	
 .shamanCutscene
 	ld a, 8
 	ld [wVBlankCount], a
@@ -290,7 +315,11 @@ InitOverworld::
 	ld [wShamanY], a
 	ld a, $F0
 	ld [wShamanX], a
+	
+	ld a, 1
+	ld [wCutsceneIsSeen], a
 	call UpdateShamanObject
+	
 	ret
 
 ; c set if walkable
@@ -515,7 +544,13 @@ UpdateOverworld::
 	call WaitForVBlankFunction
 	
 	call CheckExits
-	jp .return
-.return
 	
+	
+.return
+	ret
+
+ExitGame::
+	ld a, 0
+	ld [wGameState], a
+	call NextGameState
 	ret

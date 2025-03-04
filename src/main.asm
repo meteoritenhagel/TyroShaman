@@ -123,23 +123,19 @@ LoadValue:
 	ld [wTimerCounter], a
 	pop af
 	reti
-	
-DoSound:
+
+VBlankHandler:
 	push af
 	push bc
 	push de
 	push hl
-	call hUGE_dosound
+	ld a, [wUpdateSound]
+	cp 0
+	call nz, hUGE_dosound
 	pop hl
 	pop de
 	pop bc
 	pop af
-	ret
-
-VBlankHandler:
-	ld a, [wUpdateSound]
-	cp 0
-	call nz, DoSound
 	reti
 	
 NextGameState::

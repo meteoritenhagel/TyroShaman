@@ -16,7 +16,7 @@ InitTitleScreen::
 	call Memcopy
 	
 	; Turn the LCD on
-	ld a, LCDCF_ON | LCDCF_BGON ;| LCDCF_OBJON
+	ld a, LCDCF_ON | LCDCF_BGON
 	ld [rLCDC], a
 	
 	; load intro song

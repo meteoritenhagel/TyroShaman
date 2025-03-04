@@ -135,6 +135,50 @@ def get_name_from_path(path):
     return os.path.basename(path).split(".")[0]
 
 
+def simple_tilemap_to_asm(tmx_file_path, tileset):
+    tmx_data = pytmx.TiledMap(tmx_file_path)
+    name = get_name_from_path(tmx_file_path)
+
+    print()
+    print(f"Build Simple Tilemap ASM: {tmx_file_path}")
+
+    tileset_data = np.zeros((32, 32), np.uint8)
+    for layer in tmx_data.visible_layers:
+        if isinstance(layer, pytmx.TiledTileLayer):
+            if layer.name == "tiles":
+                for x, y, gid in layer:  # Iterate over (x, y) tile positions and GIDs
+                    orig_image, binary_data = get_image_from_gid(tmx_data, gid)
+                    tileset_data[y, x] = tileset["tiles"].index(binary_data)
+
+    output_str = f'INCLUDE "./include/hardware.inc"\n\n'
+
+    output_str += f'SECTION "{name} Tilemap", ROMX, BANK[1]\n\n'
+    output_str += f"{name}Start::\n"
+    for row in range(32):
+        output_str += "db "
+        for column in range(32):
+            output_str += f"${tileset_data[row, column]:02x}, "
+        output_str = output_str[:-2] + "\n"
+    output_str += f"{name}End::\n\n"
+
+    output_str += (
+        f'{name}Load::\n'
+        f'    ld de, {tileset["name"]}Start\n'
+        f'    ld hl, $9000  ; Tileblock 2\n'
+        f'    ld bc, {tileset["name"]}End - {tileset["name"]}Start\n'
+        f'    call Memcopy\n'
+        f'\n'
+        f'    ld de, {name}Start\n'
+        f'    ld hl, $9800  ; Tilemap 0\n'
+        f'    ld bc, {name}End - {name}Start\n'
+        f'    call Memcopy\n'
+        f'    ret\n\n'
+    )
+
+    with open(f"../src/tilemap_{name.lower()}.asm", "w") as f:
+        f.write(output_str)
+
+
 def tilemap_to_asm(tmx_file_path, tileset, exits):
     tmx_data = pytmx.TiledMap(tmx_file_path)
     name = get_name_from_path(tmx_file_path)
@@ -281,15 +325,23 @@ if __name__ == "__main__":
     tmx_file_path = "./raw/all_outside.tmx"  # Replace with your TMX file path
     tileset_outside = tileset_to_asm(tmx_file_path, "Outside")
 
+    tmx_file_path = "./raw/all_ritual.tmx"  # Replace with your TMX file path
+    tileset_ritual = tileset_to_asm(tmx_file_path, "Ritual")
+
+    simple_tilemap_to_asm("./raw/ritual_tilemap.tmx", tileset_ritual)
+
     inside_levels = [
         "./raw/ShamanHutInside.tmx",
         "./raw/PoorWomanHutInside.tmx",
+        #"./raw/ManHutInside.tmx",
+        #"./raw/ManHutInside2.tmx",
     ]
     outside_levels = [
         "./raw/ShamanHutOutside.tmx",
         "./raw/WayToTheVillage.tmx",
         "./raw/WayToTheVillage2.tmx",
         "./raw/PoorWomanHutOutside.tmx",
+        #"./raw/ManHutOutside.tmx",
     ]
     all_levels = inside_levels + outside_levels
     exits_dict = collect_level_exits(all_levels)

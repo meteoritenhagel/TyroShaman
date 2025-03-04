@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="20" height="18" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="20" height="18" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="7">
  <tileset firstgid="1" source="all_inside_tileset.tsx"/>
  <layer id="1" name="tiles" width="20" height="18">
   <data encoding="csv">
@@ -26,5 +26,6 @@
  <objectgroup id="3" name="teleport" opacity="0.8">
   <object id="4" name="0" type="entry" gid="479" x="96" y="120" width="8" height="8"/>
   <object id="5" name="0, ShamanHutOutside, 0" type="exit" gid="479" x="96" y="136" width="8" height="8"/>
+  <object id="6" name="Patient3, 1" type="entry" gid="479" x="24" y="56" width="8" height="8"/>
  </objectgroup>
 </map>

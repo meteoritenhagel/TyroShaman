@@ -3,13 +3,6 @@ INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
 
 SECTION "Story", ROM0
-
-LoadTextFontIntoVRAM:
-	; Copy the font data
-	ld de, Font
-	ld hl, $8800  ; Tileblock 1
-	ld bc, FontEnd - Font
-	call Memcopy
 	
 ClearBackground::
 	; Turn the LCD off
@@ -29,34 +22,11 @@ ClearBackgroundLoop:
 	ld [rLCDC], a
 	ret
 
-	
-DrawText_WithTypewriterEffect::
-	; Wait a bit
-	ld a, STORY_TEXT_WAIT
-	ld [wVBlankCount], a
-	call WaitForVBlankFunction
-	
-	; Check for the end of string character 255
-	ld a, [hl]
-	cp 255
-	ret z
-
-	; Write the current character (in hl) to the address
-	; on the tilemap (in de)
-	ld a, [hl]
-	add $80
-	ld [de], a
-
-	; move to the next character and next background tile
-	inc hl
-	inc de
-
-	jp DrawText_WithTypewriterEffect
 
 InitStory::
 	call LoadTextFontIntoVRAM
 	
-	ld a, %11100100
+	ld a, %00011011
 	ld [rBGP], a
 	
 	call ClearBackground
@@ -137,8 +107,4 @@ Story:
 	.Line5 db "home when the", 255
 	.Line6 db " 'CURSE OF EMPTY'", 255
 	.Line7 db "is lifted from us.", 255
-
-
-Font:
-INCBIN "./res/font.2bpp"
-FontEnd:
+	

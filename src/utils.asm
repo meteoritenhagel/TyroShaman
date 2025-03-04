@@ -1,4 +1,5 @@
 INCLUDE "./include/hardware.inc"
+INCLUDE "./include/constants.inc"
 
 SECTION "Utility Functions", ROM0
 
@@ -137,3 +138,41 @@ TurnLcdOff::
 	ld [rWY], a
 	ret
 
+
+LoadTextFontIntoVRAM::
+	; Copy the font data
+	ld de, Font
+	ld hl, $8800  ; Tileblock 1
+	ld bc, FontEnd - Font
+	call Memcopy
+	ret
+	
+DrawText_WithTypewriterEffect::
+	; Wait a bit
+	ld a, STORY_TEXT_WAIT
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
+	
+	; Check for the end of string character 255
+	ld a, [hl]
+	cp 255
+	ret z
+
+	; Write the current character (in hl) to the address
+	; on the tilemap (in de)
+	ld a, [hl]
+	add $80
+	ld [de], a
+
+	; move to the next character and next background tile
+	inc hl
+	inc de
+
+	jp DrawText_WithTypewriterEffect
+
+	
+SECTION "Font", ROM0
+
+Font::
+INCBIN "./res/font.2bpp"
+FontEnd::
