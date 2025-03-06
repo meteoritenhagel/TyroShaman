@@ -1,5 +1,7 @@
 INCLUDE "./include/hardware.inc"
 
+INCLUDE "./include/constants.inc"
+
 SECTION "PoorWomanHutInside Tilemap", ROMX, BANK[1]
 
 PoorWomanHutInsideStart::
@@ -68,14 +70,19 @@ PoorWomanHutInsideLoad::
     ld [wPatientY], a
     ld a, 48
     ld [wPatientX], a
-    ld a, 24
+    ld a, 12
     ld [wPatientTileOffset], a
+    ld a,  EARTH
+    ld [wRitualSpirit], a
+    ld a,  6
+    ld [wTimePerBeat], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject
     ret
 
 PoorWomanHutInsideCheckExit::
+    ; Check for Room exit
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 96

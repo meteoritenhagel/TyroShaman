@@ -1,5 +1,7 @@
 INCLUDE "./include/hardware.inc"
 
+INCLUDE "./include/constants.inc"
+
 SECTION "PoorWomanHutOutside Tilemap", ROMX, BANK[1]
 
 PoorWomanHutOutsideStart::
@@ -64,6 +66,7 @@ PoorWomanHutOutsideLoad::
     ret
 
 PoorWomanHutOutsideCheckExit::
+    ; Check for Room exit
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 32

@@ -1,5 +1,7 @@
 INCLUDE "./include/hardware.inc"
 
+INCLUDE "./include/constants.inc"
+
 SECTION "WayToTheVillage Tilemap", ROMX, BANK[1]
 
 WayToTheVillageStart::
@@ -64,6 +66,7 @@ WayToTheVillageLoad::
     ret
 
 WayToTheVillageCheckExit::
+    ; Check for Room exit
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 144

@@ -206,10 +206,10 @@ UpdatePatientObject::
 	
 	ld hl, wShadowOAM+32
 	ld a, [wPatientY]  ; y
-	add a, $16
+	add a, 16
 	ld [hli], a
 	ld a, [wPatientX] ; x
-	add a, $8
+	add a, 8
 	ld [hli], a
 	ld a, 12 ; Shaman tile
 	add a, b
@@ -217,10 +217,10 @@ UpdatePatientObject::
 	
 	ld hl, wShadowOAM+32+4 
 	ld a, [wPatientY] ; y
-	add a, $16
+	add a, 16
 	ld [hli], a
 	ld a, [wPatientX] ; x
-	add a, $8+$8
+	add a, 8+8
 	ld [hli], a
 	ld a, 13 ; Shaman tile
 	add a, b
@@ -228,10 +228,10 @@ UpdatePatientObject::
 	
 	ld hl, wShadowOAM+32+8
 	ld a, [wPatientY] ; y
-	add a, $8+$16
+	add a, 8+16
 	ld [hli], a
 	ld a, [wPatientX] ; x
-	add a, $8
+	add a, 8
 	ld [hli], a
 	ld a, 14 ; Shaman tile
 	add a, b
@@ -239,10 +239,10 @@ UpdatePatientObject::
 	
 	ld hl, wShadowOAM+32+16
 	ld a, [wPatientY] ; y
-	add a, $8+$16
+	add a, 8+16
 	ld [hli], a
 	ld a, [wPatientX] ; x
-	add a, $8+$8
+	add a, 8+8
 	ld [hli], a
 	ld a, 15 ; Shaman tile
 	add a, b
@@ -496,7 +496,6 @@ UpdateOverworld::
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 
-	call CheckExits
 	jp .return
 .checkleft
 	ld a, [wCurKeys]
@@ -530,7 +529,6 @@ UpdateOverworld::
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 
-	call CheckExits
 	jp .return
 .checkup
 	ld a, [wCurKeys]
@@ -564,7 +562,6 @@ UpdateOverworld::
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 	
-	call CheckExits
 	jp .return
 .checkdown
 	ld a, [wCurKeys]
@@ -598,11 +595,25 @@ UpdateOverworld::
 	ld a, PLAYER_WALK_WAIT
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
-	
-	call CheckExits
-	
-	
+
 .return
+	; First, check for collision with patient
+	ld a, [wPlayerY]
+	ld b, a
+	ld a, [wPatientY]
+	cp a, b
+	jp nz, .noPatient
+	ld a, [wPlayerX]
+	ld b, a
+	ld a, [wPatientX]
+	cp a, b
+	jp nz, .noPatient
+	call PerformRitual
+	xor a
+	ld [rLCDC], a
+	call InsideInitOverworld
+.noPatient
+	call CheckExits
 	ret
 
 ExitGame::

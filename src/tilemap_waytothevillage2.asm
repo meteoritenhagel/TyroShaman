@@ -1,5 +1,7 @@
 INCLUDE "./include/hardware.inc"
 
+INCLUDE "./include/constants.inc"
+
 SECTION "WayToTheVillage2 Tilemap", ROMX, BANK[1]
 
 WayToTheVillage2Start::
@@ -70,12 +72,17 @@ WayToTheVillage2Load::
     ld [wPatientX], a
     ld a, 48
     ld [wPatientTileOffset], a
+    ld a,  WIND
+    ld [wRitualSpirit], a
+    ld a,  4
+    ld [wTimePerBeat], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject
     ret
 
 WayToTheVillage2CheckExit::
+    ; Check for Room exit
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 144

@@ -192,11 +192,14 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
 
     for object in tmx_data.objects:
         name_split = object.name.strip(" ").split(",")
-        if len(name_split) == 2: # patient object
+        if len(name_split) == 5: # patient object
             patientX = int(object.x)
             patientY = int(object.y)
             patientID = name_split[0][-1]
             patientTile = int(name_split[1])*12
+            patientSpirit = name_split[2]
+            patientRhythm = name_split[3]
+            patientTimePerBeat = name_split[4]
 
     tileset_data = np.zeros((32, 32), np.uint8)
     for layer in tmx_data.visible_layers:
@@ -207,6 +210,7 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
                     tileset_data[y, x] = tileset["tiles"].index(binary_data)
 
     output_str = f'INCLUDE "./include/hardware.inc"\n\n'
+    output_str += f'INCLUDE "./include/constants.inc"\n\n'
 
     output_str += f'SECTION "{name} Tilemap", ROMX, BANK[1]\n\n'
     output_str += f"{name}Start::\n"
@@ -255,6 +259,10 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
             f'    ld [wPatientX], a\n'
             f'    ld a, {patientTile}\n'
             f'    ld [wPatientTileOffset], a\n'
+            f'    ld a, {patientSpirit}\n'
+            f'    ld [wRitualSpirit], a\n'
+            f'    ld a, {patientTimePerBeat}\n'
+            f'    ld [wTimePerBeat], a\n'
             f'.update\n'
             f'    call UpdatePatientObject\n'
         )
@@ -273,6 +281,7 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
 
     output_str += f"{name}CheckExit::\n"
     output_str += (
+        f"    ; Check for Room exit\n"
         f"    ; first check x coordinate\n"
         f"    ld a, [wPlayerX]\n"
     )

@@ -1,12 +1,6 @@
 INCLUDE "./include/hardware.inc"
+INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
-
-DEF TIME_PER_BEAT EQU 5
-
-DEF EARTH EQU 0
-DEF WATER EQU 1
-DEF WIND EQU 2
-DEF FIRE EQU 3
 
 DEF EARTH1 EQU $0c
 DEF EARTH2 EQU $16
@@ -55,6 +49,7 @@ wPlayerRhythm::
 	
 wCorrectSolution:: db
 wPlayerSolution:: db
+wTimePerBeat:: db
 	
 wWaitCounter:: db
 
@@ -85,8 +80,9 @@ DrawText:
 
 Wait:
 	push af
+	push bc
 	push hl
-	ld a, TIME_PER_BEAT
+	ld a, [wTimePerBeat]
 	ld [wWaitCounter], a
 .start
 	ld a, [wWaitCounter]
@@ -97,8 +93,11 @@ Wait:
 	xor a
 	ld [wUpdateSound], a
 	
+	ld a, [wTimePerBeat]
+	dec a
+	ld b, a
 	ld a, [wWaitCounter]
-	cp a, TIME_PER_BEAT-1
+	cp a, b
 	jp nz, .switchOffSound
 	push hl
 	ld hl, normalbeat
@@ -119,6 +118,7 @@ Wait:
 	jp .start
 .return
 	pop hl
+	pop bc
 	pop af
 	ret
 	
@@ -128,7 +128,7 @@ WaitPlayer:
 	push af
 	push bc
 	push hl
-	ld a, TIME_PER_BEAT
+	ld a, [wTimePerBeat]
 	ld [wWaitCounter], a
 	ld c, $20
 	ld b, 0
@@ -203,7 +203,7 @@ WaitSpirit:
 	push af
 	push bc
 	push hl
-	ld a, TIME_PER_BEAT
+	ld a, [wTimePerBeat]
 	ld [wWaitCounter], a
 	ld c, $20
 	ld b, 0
@@ -231,8 +231,12 @@ WaitSpirit:
 	ld [hl], a
 	xor a
 	ld [wUpdateSound], a
+	
+	ld a, [wTimePerBeat]
+	dec a
+	ld b, a
 	ld a, [wWaitCounter]
-	cp a, TIME_PER_BEAT-1
+	cp a, b
 	jp nz, .switchOffSound
 	push hl
 	ld hl, mainbeat
@@ -332,11 +336,6 @@ CursorInnerSpirit:
 	
 ; returns z if ritual was successful
 PerformRitual::
-	
-	; set ritual spirit (TODO outside)
-	ld a, 1
-	ld [wRitualSpirit], a
-	
 	; Stop music
 	xor a
 	ld [wUpdateSound], a
@@ -437,13 +436,13 @@ PerformRitual::
 	jp .end
 .checkWind
 	; wind means starting one beat too early
+	cp a, WIND
+	jp nz, .checkFire
 	
 	ld a, [wCorrectSolution]
 	rla
 	ld [wCorrectSolution], a
 	
-	cp a, WIND
-	jp nz, .checkFire
 	ld a, WIND1
 	ld [$9862], a
 	ld a, WIND2
@@ -456,12 +455,9 @@ PerformRitual::
 	jp .end
 .checkFire
 	; fire inverts the solution
-	
 	ld a, [wCorrectSolution]
 	cpl a
 	ld [wCorrectSolution], a
-	
-	cp a, FIRE
 	ld a, FIRE1
 	ld [$9862], a
 	ld a, FIRE2
@@ -471,7 +467,6 @@ PerformRitual::
 	ld a, FIRE4
 	ld [$9883], a
 	ld hl, RitualText.Fire
-	jp .end
 .end
 	ld a, %11100100
 	ld [rBGP], a
@@ -516,6 +511,15 @@ PerformRitual::
 	ld a, [wPlayerLives]
 	add a, $90
 	ld [$9891], a
+	
+; clean spirit rhythm display
+	ld b, 8
+	ld a, $3
+	ld hl, $98e6
+.cleanSpirit
+	ld [hli], a
+	dec b
+	jp nz, .cleanSpirit
 	
 	; clean player rhythm display
 	ld b, 8

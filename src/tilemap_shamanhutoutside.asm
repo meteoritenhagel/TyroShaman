@@ -1,5 +1,7 @@
 INCLUDE "./include/hardware.inc"
 
+INCLUDE "./include/constants.inc"
+
 SECTION "ShamanHutOutside Tilemap", ROMX, BANK[1]
 
 ShamanHutOutsideStart::
@@ -70,12 +72,17 @@ ShamanHutOutsideLoad::
     ld [wPatientX], a
     ld a, 36
     ld [wPatientTileOffset], a
+    ld a,  WATER
+    ld [wRitualSpirit], a
+    ld a,  5
+    ld [wTimePerBeat], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject
     ret
 
 ShamanHutOutsideCheckExit::
+    ; Check for Room exit
     ; first check x coordinate
     ld a, [wPlayerX]
     cp a, 80
