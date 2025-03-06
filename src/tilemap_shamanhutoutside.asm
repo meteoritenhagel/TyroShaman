@@ -70,12 +70,14 @@ ShamanHutOutsideLoad::
     ld [wPatientY], a
     ld a, 112
     ld [wPatientX], a
-    ld a, 36
+    ld a, 4
     ld [wPatientTileOffset], a
-    ld a,  WATER
+    ld a, WATER
     ld [wRitualSpirit], a
-    ld a,  5
+    ld a, 5
     ld [wTimePerBeat], a
+    ld a, `10101111
+    ld [wCorrectSolution], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject

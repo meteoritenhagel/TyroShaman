@@ -70,12 +70,14 @@ PoorWomanHutInsideLoad::
     ld [wPatientY], a
     ld a, 48
     ld [wPatientX], a
-    ld a, 12
+    ld a, 0
     ld [wPatientTileOffset], a
-    ld a,  EARTH
+    ld a, EARTH
     ld [wRitualSpirit], a
-    ld a,  6
+    ld a, 6
     ld [wTimePerBeat], a
+    ld a, `10011010
+    ld [wCorrectSolution], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject

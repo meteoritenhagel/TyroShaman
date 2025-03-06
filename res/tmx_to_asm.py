@@ -191,12 +191,12 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
     patientID = None
 
     for object in tmx_data.objects:
-        name_split = object.name.strip(" ").split(",")
+        name_split = object.name.replace(" ", "").split(",")
         if len(name_split) == 5: # patient object
             patientX = int(object.x)
             patientY = int(object.y)
             patientID = name_split[0][-1]
-            patientTile = int(name_split[1])*12
+            patientTile = int(name_split[1])*4
             patientSpirit = name_split[2]
             patientRhythm = name_split[3]
             patientTimePerBeat = name_split[4]
@@ -263,6 +263,8 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
             f'    ld [wRitualSpirit], a\n'
             f'    ld a, {patientTimePerBeat}\n'
             f'    ld [wTimePerBeat], a\n'
+            f'    ld a, `{patientRhythm}\n'
+            f'    ld [wCorrectSolution], a\n'
             f'.update\n'
             f'    call UpdatePatientObject\n'
         )

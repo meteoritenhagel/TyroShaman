@@ -70,12 +70,14 @@ WayToTheVillage2Load::
     ld [wPatientY], a
     ld a, 56
     ld [wPatientX], a
-    ld a, 48
+    ld a, 8
     ld [wPatientTileOffset], a
-    ld a,  WIND
+    ld a, WIND
     ld [wRitualSpirit], a
-    ld a,  4
+    ld a, 4
     ld [wTimePerBeat], a
+    ld a, `11010110
+    ld [wCorrectSolution], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject

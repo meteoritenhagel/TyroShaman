@@ -211,7 +211,7 @@ UpdatePatientObject::
 	ld a, [wPatientX] ; x
 	add a, 8
 	ld [hli], a
-	ld a, 12 ; Shaman tile
+	ld a, FIRST_PATIENT_TILE ; First patient tile
 	add a, b
 	ld [hl], a
 	
@@ -222,7 +222,7 @@ UpdatePatientObject::
 	ld a, [wPatientX] ; x
 	add a, 8+8
 	ld [hli], a
-	ld a, 13 ; Shaman tile
+	ld a, FIRST_PATIENT_TILE+1
 	add a, b
 	ld [hl], a
 	
@@ -233,7 +233,7 @@ UpdatePatientObject::
 	ld a, [wPatientX] ; x
 	add a, 8
 	ld [hli], a
-	ld a, 14 ; Shaman tile
+	ld a, FIRST_PATIENT_TILE+2
 	add a, b
 	ld [hl], a
 	
@@ -244,7 +244,7 @@ UpdatePatientObject::
 	ld a, [wPatientX] ; x
 	add a, 8+8
 	ld [hli], a
-	ld a, 15 ; Shaman tile
+	ld a, FIRST_PATIENT_TILE+3
 	add a, b
 	ld [hl], a
 	
@@ -609,6 +609,7 @@ UpdateOverworld::
 	cp a, b
 	jp nz, .noPatient
 	call PerformRitual
+	jp nz, ExitGame
 	xor a
 	ld [rLCDC], a
 	call InsideInitOverworld

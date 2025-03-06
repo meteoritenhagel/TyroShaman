@@ -27,6 +27,6 @@
  <objectgroup id="2" name="teleport" opacity="0.8">
   <object id="1" name="0, PoorWomanHutOutside, 1" type="exit" gid="765" x="96" y="136" width="8" height="8"/>
   <object id="2" name="0" type="entry" gid="765" x="96" y="120" width="8" height="8"/>
-  <object id="3" name="Patient0, 1, EARTH, 10011010, 6" type="entry" gid="765" x="48" y="72" width="8" height="8"/>
+  <object id="3" name="Patient0, 0, EARTH, 10011010, 6" type="entry" gid="765" x="48" y="72" width="8" height="8"/>
  </objectgroup>
 </map>

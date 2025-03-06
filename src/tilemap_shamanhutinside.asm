@@ -70,12 +70,14 @@ ShamanHutInsideLoad::
     ld [wPatientY], a
     ld a, 24
     ld [wPatientX], a
-    ld a, 0
+    ld a, 12
     ld [wPatientTileOffset], a
-    ld a,  FIRE
+    ld a, FIRE
     ld [wRitualSpirit], a
-    ld a,  3
+    ld a, 3
     ld [wTimePerBeat], a
+    ld a, `01001011
+    ld [wCorrectSolution], a
 .update
     call UpdatePatientObject
     call UpdatePlayerObject

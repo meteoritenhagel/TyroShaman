@@ -362,42 +362,15 @@ PerformRitual::
 	ld [rLCDC], a
 	call ritual_tilemapLoad
 	
-	
-	ld a, 1
-	ld [wSpiritRhythm.r1], a
-	ld a, 0
-	ld [wSpiritRhythm.r2], a
-	ld a, 1
-	ld [wSpiritRhythm.r3], a
-	ld a, 0
-	ld [wSpiritRhythm.r4], a
-	ld a, 1
-	ld [wSpiritRhythm.r5], a
-	ld a, 1
-	ld [wSpiritRhythm.r6], a
-	ld a, 1
-	ld [wSpiritRhythm.r7], a
-	ld a, 1
-	ld [wSpiritRhythm.r8], a
-	
-	; set solution
+	; set spirit rhythm field
 	ld b, `10000000
-	ld c, 0 ; save solution in c
 	ld hl, wSpiritRhythm
 .solutionLoop
-	ld a, [hli]
-	cp a, 0
-	jp nz, .setBit
-	jp .jumpOver
-.setBit
-	ld a, c
-	or a, b
-	ld c, a
-.jumpOver
-	rr b
+	ld a, [wCorrectSolution]
+	and a, b
+	ld [hli], a
+	rr b ; sets zero
 	jp nz, .solutionLoop
-	ld a, c
-	ld [wCorrectSolution], a
 	
 	; draw Ritual Spirit and calculate the solution
 	; Earth does not change the rhythm
@@ -606,7 +579,7 @@ PerformRitual::
 	call FadeToBlack
 	
 	xor a
-	cp a, 0
+	cp a, 1
 	
 	ret
 	
