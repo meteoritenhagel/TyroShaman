@@ -266,10 +266,10 @@ def tilemap_to_asm(tmx_file_path, tileset, exits):
             f'    ld a, `{patientRhythm}\n'
             f'    ld [wCorrectSolution], a\n'
             f'.update\n'
-            f'    call UpdatePatientObject\n'
         )
 
     output_str += (
+        f'    call UpdatePatientObject\n'
         f'    call UpdatePlayerObject\n'
         f'    ret\n\n'
     )

@@ -2,7 +2,7 @@ INCLUDE "./include/hardware.inc"
 INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
 
-SECTION "Story", ROM0
+SECTION "Story", ROMX, BANK[1]
 	
 ClearBackground::
 	; Turn the LCD off
@@ -95,7 +95,7 @@ UpdateStory::
 	ret
 	
 	
-SECTION "Text", ROM0
+SECTION "Text", ROMX, BANK[1]
 
 Story: 
         ;.Line1 db "The galatic empire", 255
@@ -105,6 +105,6 @@ Story:
 	.Line3 db "Do not fear...", 255
 	.Line4 db "For I shall return", 255
 	.Line5 db "home when the", 255
-	.Line6 db " 'CURSE OF EMPTY'", 255
+	.Line6 db "  CURSE OF EMPTY", 255
 	.Line7 db "is lifted from us.", 255
 	

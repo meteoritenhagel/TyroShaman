@@ -33,6 +33,7 @@ SECTION "Header", ROM0[$100]
 
 	ds $150 - @, 0 ; Make room for the header
 
+SECTION "Entry", ROMX, BANK[1]
 EntryPoint:
 	; Do not turn the LCD off outside of VBlank
 	xor a

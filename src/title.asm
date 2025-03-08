@@ -1,6 +1,6 @@
 INCLUDE "./include/hardware.inc"
 
-SECTION "TitleScreen", ROM0
+SECTION "TitleScreen", ROMX, BANK[1]
 
 InitTitleScreen::	
 	; Copy the tile data
@@ -52,13 +52,13 @@ UpdateTitleScreen::
 	call NextGameState
 	ret
 	
-SECTION "Start Screen Tiles", ROM0
+SECTION "Start Screen Tiles", ROMX, BANK[1]
 
 TilesTitle:
 INCBIN "./res/background/title.2bpp"
 TilesTitleEnd:
 
-SECTION "Start Screen Tilemaps", ROM0
+SECTION "Start Screen Tilemaps", ROMX, BANK[1]
 
 TilemapTitle:
 INCBIN "./res/background/title.tilemap"

@@ -62,6 +62,7 @@ WayToTheVillageLoad::
     ld [wPatientY], a
     ld a, $F0
     ld [wPatientX], a
+    call UpdatePatientObject
     call UpdatePlayerObject
     ret
 

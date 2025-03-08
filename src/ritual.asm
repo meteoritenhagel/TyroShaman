@@ -2,6 +2,11 @@ INCLUDE "./include/hardware.inc"
 INCLUDE "./include/constants.inc"
 INCLUDE "src/charmap.asm"
 
+DEF BOX_EMPTY EQU $4
+DEF BOX_WITH_ARROW EQU $5
+DEF BOX_FILLED EQU $6
+DEF ARROW EQU $2
+
 DEF EARTH1 EQU $0c
 DEF EARTH2 EQU $16
 DEF EARTH3 EQU $13
@@ -107,6 +112,8 @@ Wait:
 	ld [wUpdateSound], a
 	jp .continue
 .switchOffSound
+	xor a
+	ld [wUpdateSound], a
 	ld hl, empty_song
 	call hUGE_init
 	inc a
@@ -147,7 +154,7 @@ WaitPlayer:
 	cp a, 0
 	jp z, .switchOffSound; continue normally if no key was pressed
 	; but if a key was pressed, register it
-	ld a, $5
+	ld a, BOX_FILLED
 	ld [hl], a
 
 	push hl
@@ -227,7 +234,7 @@ WaitSpirit:
 	cp a, 0
 	jp z, .switchOffSound
 	; if the rhythm contains a beat, write it down
-	ld a, $5
+	ld a, BOX_FILLED
 	ld [hl], a
 	xor a
 	ld [wUpdateSound], a
@@ -290,14 +297,14 @@ CursorSpirit:
 	ret
 	
 CursorOuter:
-	ld a, $4
+	ld a, BOX_WITH_ARROW
 	ld [hl], a
 	call Wait
-	ld a, $3
+	ld a, BOX_EMPTY
 	ld [hli], a
 	ret
 CursorInner:
-	ld a, $2
+	ld a, ARROW
 	ld [hl], a
 	call Wait
 	xor a
@@ -305,14 +312,14 @@ CursorInner:
 	ret
 	
 CursorOuterPlayer:
-	ld a, $4
+	ld a, BOX_WITH_ARROW
 	ld [hl], a
 	call WaitPlayer
-	ld a, $3
+	ld a, BOX_EMPTY
 	ld [hli], a
 	ret
 CursorInnerPlayer:
-	ld a, $2
+	ld a, ARROW
 	ld [hl], a
 	call WaitPlayer
 	xor a
@@ -320,14 +327,14 @@ CursorInnerPlayer:
 	ret
 
 CursorOuterSpirit:
-	ld a, $4
+	ld a, BOX_WITH_ARROW
 	ld [hl], a
 	call WaitSpirit
-	ld a, $3
+	ld a, BOX_EMPTY
 	ld [hli], a
 	ret
 CursorInnerSpirit:
-	ld a, $2
+	ld a, ARROW
 	ld [hl], a
 	call WaitSpirit
 	xor a
@@ -487,7 +494,7 @@ PerformRitual::
 	
 ; clean spirit rhythm display
 	ld b, 8
-	ld a, $3
+	ld a, BOX_EMPTY
 	ld hl, $98e6
 .cleanSpirit
 	ld [hli], a
@@ -496,7 +503,7 @@ PerformRitual::
 	
 	; clean player rhythm display
 	ld b, 8
-	ld a, $3
+	ld a, BOX_EMPTY
 	ld hl, $99C6
 .cleanDisplay
 	ld [hli], a
@@ -569,6 +576,13 @@ PerformRitual::
 	ld hl, RitualText.Failure2
 	call DrawText_WithTypewriterEffect
 	
+	xor a
+	ld [wUpdateSound], a
+	ld hl, music_gameover
+	call hUGE_init
+	inc a
+	ld [wUpdateSound], a
+	
 	ld de, $9922
 	ld hl, RitualText.Failure3
 	call DrawText_WithTypewriterEffect
@@ -585,20 +599,33 @@ PerformRitual::
 	
 .success
 	ld a, [wSuccessfulRitualCounter]
+	cp a, NUM_RITUALS_UNTIL_FINISHED-1
+	jp z, .youWon
 	inc a
 	ld [wSuccessfulRitualCounter], a
 	
+	xor a
+	ld [wUpdateSound], a
+	ld hl, music_success
+	call hUGE_init
+	inc a
+	ld [wUpdateSound], a
+	
 	call ClearBackground
 	
-	ld de, $98C2
+	ld de, $98A2
 	ld hl, RitualText.Success1
 	call DrawText_WithTypewriterEffect
 	
-	ld de, $9922
+	ld de, $9902
 	ld hl, RitualText.Success2
 	call DrawText_WithTypewriterEffect
 	
-	ld a, 150
+	ld de, $9962
+	ld hl, RitualText.Success3
+	call DrawText_WithTypewriterEffect
+	
+	ld a, 30
 	ld [wVBlankCount], a
 	call WaitForVBlankFunction
 	call FadeToBlack
@@ -606,13 +633,32 @@ PerformRitual::
 	cp a
 	ret
 	
+.youWon
+	call ClearBackground
 	
-SECTION "RitualText", ROM0
+	ld de, $98A1
+	ld hl, FinalText.Success1
+	call DrawText_WithTypewriterEffect
+	
+	ld de, $9901
+	ld hl, FinalText.Success2
+	call DrawText_WithTypewriterEffect
+	
+	ld de, $9961
+	ld hl, FinalText.Success3
+	call DrawText_WithTypewriterEffect
+	
+.finalLoop
+	jp .finalLoop
+	
+	
+SECTION "RitualText", ROMX, BANK[1]
 
 RitualText:
 	.Ready db "Ready...?", 255
 	.Success1 db "The patient's", 255
 	.Success2 db "spirit is healed!", 255
+	.Success3 db "Time to rest.", 255
 	.Failure1 db "You feel dizzy", 255
 	.Failure2 db "and fall down.", 255
 	.Failure3 db "Is this the end?", 255
@@ -622,3 +668,9 @@ RitualText:
 	.Water db "WATER", 255
 	.Wind db "WIND ", 255
 	.Fire db "FIRE ", 255
+	
+SECTION "Final Text", ROMX, BANK[1]
+FinalText:
+	.Success1 db "Thank you, Naura!", 255
+	.Success2 db "  You saved the", 255
+	.Success3 db "  SUN FESTIVAL!", 255

@@ -350,8 +350,8 @@ InsideInitOverworld::
 	call WaitForVBlankFunction
 	ld a, [wShamanY]
 	cp a, $89
-	jp z, .exitCutscene
-	add a, 5
+	jp nc, .exitCutscene
+	add a, SHAMAN_CUTSCENE_SPEED
 	ld [wShamanY], a
 	
 	ld a, [wShamanTileOffset]
@@ -610,6 +610,7 @@ UpdateOverworld::
 	jp nz, .noPatient
 	call PerformRitual
 	jp nz, ExitGame
+	ld a, [wSuccessfulRitualCounter]
 	xor a
 	ld [rLCDC], a
 	call InsideInitOverworld
@@ -622,3 +623,4 @@ ExitGame::
 	ld [wGameState], a
 	call NextGameState
 	ret
+	

@@ -1,7 +1,7 @@
 INCLUDE "./include/hardware.inc"
 INCLUDE "./include/constants.inc"
 
-SECTION "Utility Functions", ROM0
+SECTION "Utility Functions", ROMX, BANK[1]
 
 ; Copy bytes from one area to another.
 ; @param de: Source
