@@ -1,5 +1,5 @@
 # TyroShaman
-My final project for the course "Music and Ritual" in the winter semester of 2024/25 at the KUG Graz. All code and assets (unless marked otherwise in Section [Credits](README.md#Credits)). 
+My final project for the course "Music and Ritual" in the winter semester of 2024/25 at the KUG Graz. All code and assets (unless marked otherwise in Section [Credits](README.md#Credits)) are by me and published under the MIT license. 
 
 # Credits
 ## Libraries
